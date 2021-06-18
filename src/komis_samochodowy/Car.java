@@ -2,24 +2,14 @@ package komis_samochodowy;
 
 public class Car extends Vehicle {
 
-	private String type;
 	private String fuelType;
 	
-	Car(int ID, String brand, String color, String model, double price, String type, String fuelType) {
-		super(ID, brand, color, model, price);
+	Car(int ID, String brand, String color, String model, double price, String fuelType) {
+		super(ID, brand, color, model, price, VehicleType.CAR);
 		
-		this.type = type;
-		this.type = fuelType;
+		this.fuelType = fuelType;
 	}
 
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-	
 	public String getFuelType() {
 		return fuelType;
 	}

@@ -1,20 +1,19 @@
 package komis_samochodowy;
 
-import java.util.Date;
-
 public class Vehicle implements IVehicle {
 	private int ID;
 	private String brand;
 	private String color;
 	private String model;
 	private double price;
-	//private Date yearOfProduction;
-	protected Vehicle(int ID, String brand, String color, String model, double price) {
+	private String type;
+	protected Vehicle(int ID, String brand, String color, String model, double price, String type) {
 		this.ID = ID;
 		this.brand = brand;
 		this.color = color;
 		this.model = model;
 		this.price = price;
+		this.setType(type);
 	}
 	
 	public void setID(int ID) {
@@ -56,18 +55,18 @@ public class Vehicle implements IVehicle {
 	public void setPrice(double price) {
 		this.price = price;
 	}
-
-//	public Date getYearOfProduction() {
-//		return yearOfProduction;
-//	}
-//
-//	public void setYearOfProduction(Date yearOfProduction) {
-//		this.yearOfProduction = yearOfProduction;
-//	}
 	
 	@Override 
 	public String toString() {
 		return "Vehicle. \nBrand: " + brand + ", \nModel: " + model + ", \nColor: " + color + ", \nPrice: " + price;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 	
 }

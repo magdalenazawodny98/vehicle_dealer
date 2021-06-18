@@ -16,17 +16,23 @@ import java.awt.Insets;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import java.awt.Choice;
 import java.awt.Label;
 import java.awt.FlowLayout;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.awt.Panel;
+import java.awt.Button;
 
-
-public class VehicleDealerFrame {
+public class VehicleDealerFrame extends VehicleDealerAbstract {
 
 	private JFrame frame;
 	private final ButtonGroup buttonGroup = new ButtonGroup();
@@ -38,7 +44,37 @@ public class VehicleDealerFrame {
 	private VehicleDealer vehicleDealer;
 	private int carID = 1;
 	private int motorcycleID = 1;
+	private int selectedCarIndex;
+	private int selectedMotorcycleIndex;
 
+	DefaultListModel<String> listModel = new DefaultListModel<String>();;
+	
+	public class CarDealerCash {
+		private List<Vehicle> vehicles;
+		private double price = 0;
+		public CarDealerCash(List<Vehicle> vehicles) {
+			this.vehicles = vehicles;
+		}
+		
+		public CarDealerCash() {
+			// TODO Auto-generated constructor stub
+		}
+		
+		public void updateVehicleList(List<Vehicle> vehicles) {
+			this.vehicles = vehicles;
+		}
+
+		public void calculateAllVehiclePrice() {			
+			vehicles.stream().forEach(v -> {
+				price += v.getPrice();
+			});
+			
+			System.out.println("Cena wszystkich pojazdow: " + price);
+		}
+	}
+
+
+		
 	/**
 	 * Launch the application.
 	 */
@@ -50,19 +86,43 @@ public class VehicleDealerFrame {
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
+					
 				}
 			}
+			
 		});
 	}
 
+	private int getCarID() {
+		return this.carID++;
+	}
+	
+	private int getMotorcycleID() {
+		return this.motorcycleID++;
+	}
 	/**
 	 * Create the application.
 	 */
 	public VehicleDealerFrame() {
-		initialize();
 		vehicleDealer = new VehicleDealer();
-	}
+		// Add some cars and motorcycles to the list
+		vehicleDealer.addVehicleToList(new Car(getCarID(), "Ford", "Focus", "czarny", 15000.0, "diesel"));
+		vehicleDealer.addVehicleToList(new Car(getCarID(), "Ford", "Mondeo", "bialy", 12000.0, "benzyna"));
+		vehicleDealer.addVehicleToList(new Car(getCarID(), "Peugeot", "206", "srebrny", 8000.0, "benzyna"));
+		vehicleDealer.addVehicleToList(new Car(getCarID(), "BMW", "e92", "niebieski", 24000.0, "diesel"));
+		
+		vehicleDealer.addVehicleToList(new Motorcycle(getMotorcycleID(), "Yamaha", "WR250X", "niebieski", 15000.0, "czterosow"));
+		vehicleDealer.addVehicleToList(new Motorcycle(getMotorcycleID(), "Ducati", "Monster", "bialy", 42000.0, "czterosow"));
+		vehicleDealer.addVehicleToList(new Motorcycle(getMotorcycleID(), "Ogar", "200", "czerwony", 1200.0, "dwusow"));
 
+
+		initialize();
+	}
+	
+	public List<Vehicle> filterVehicles(List<Vehicle> vehList, String filterType) {
+		return vehList.stream().filter(v -> v.getType() == filterType).collect(Collectors.toList());
+	}
+	
 	/**
 	 * Initialize the contents of the frame.
 	 */
@@ -88,7 +148,16 @@ public class VehicleDealerFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				
+				listModel.clear();
+				
 				// Obs³uga klikniêcia w samochód
+				List<Vehicle> vList = vehicleDealer.getVehicleList();
+				List<Vehicle> carsList = filterVehicles(vList, VehicleType.CAR);
+				
+				for(Vehicle v: carsList) {
+					listModel.addElement(v.getBrand() + " " + v.getModel() + " " + v.getPrice() + "zl");
+				}
+				
 			}
 		});
 		buttonGroup.add(rdbtnNewRadioButton);
@@ -102,9 +171,16 @@ public class VehicleDealerFrame {
 		rdbtnNewRadioButton_1.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				
-				// Obs³uga klikniêcia w motocykl
 
+				listModel.clear();
+
+				// Obs³uga klikniêcia w motocykl
+				List<Vehicle> vList = vehicleDealer.getVehicleList();
+				List<Vehicle> carsList = filterVehicles(vList, VehicleType.MOTORCYCLE);
+				
+				for(Vehicle v: carsList) {
+					listModel.addElement(v.getBrand() + " " + v.getModel() + " " + v.getPrice() + "zl");
+				}
 			}
 		});
 		buttonGroup.add(rdbtnNewRadioButton_1);
@@ -122,7 +198,38 @@ public class VehicleDealerFrame {
 		gbc_lblNewLabel.gridy = 1;
 		panel.add(lblNewLabel, gbc_lblNewLabel);
 		
-		JList list = new JList();
+		JList<String> list = new JList<String>(listModel);
+		list.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 1) {
+					String selectedType = null;
+					
+					if(rdbtnNewRadioButton.isSelected()) {
+						selectedType = VehicleType.CAR;
+					}
+					
+					if(rdbtnNewRadioButton_1.isSelected()) {
+						selectedType = VehicleType.MOTORCYCLE;
+					}
+					
+		            JList target = (JList)e.getSource();
+		            int index = target.locationToIndex(e.getPoint());
+		            if (index >= 0) {
+		               Object item = target.getModel().getElementAt(index);
+		                  
+		               if(selectedType == VehicleType.CAR) {
+		            	   selectedCarIndex = index;
+		               }
+		               
+		               if(selectedType == VehicleType.MOTORCYCLE) {
+		            	   selectedMotorcycleIndex = index;
+		               }
+		                  
+		            }
+		         }
+			}
+		});
 		GridBagConstraints gbc_list = new GridBagConstraints();
 		gbc_list.gridwidth = 2;
 		gbc_list.insets = new Insets(0, 0, 5, 5);
@@ -132,6 +239,18 @@ public class VehicleDealerFrame {
 		panel.add(list, gbc_list);
 		
 		JButton btnNewButton = new JButton("Kup");
+		btnNewButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {				
+				if(rdbtnNewRadioButton.isSelected()) {
+					listModel.remove(selectedCarIndex);
+				}
+				
+				if(rdbtnNewRadioButton_1.isSelected()) {
+					listModel.remove(selectedMotorcycleIndex);
+				}
+			}
+		});
 		GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
 		gbc_btnNewButton.gridwidth = 2;
 		gbc_btnNewButton.insets = new Insets(0, 0, 5, 5);
@@ -243,7 +362,7 @@ public class VehicleDealerFrame {
 		btnNewButton_1.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				try {
+				
 					String selectedType = null;
 					String brand = null;
 					String model = null;
@@ -252,55 +371,72 @@ public class VehicleDealerFrame {
 					Vehicle vehicle = null;
 					
 					if(rdbtnNewRadioButton_2.isSelected()) {
-						System.out.println("Samochód zaznaczony");
 						selectedType = VehicleType.CAR;
 					}
 					
 					if(rdbtnNewRadioButton_3.isSelected()) {
-						System.out.println("Motocykl zaznaczony");
 						selectedType = VehicleType.MOTORCYCLE;
 					}
 
-					// Todo add costume error handling 
-					if(txtPodajMark.getText().length() > 0) {
-						brand = txtPodajMark.getText();
+				try {
+					if(
+							txtPodajMark.getText().length() == 0 || 
+							txtPodajModel.getText().length() == 0 ||
+							txtPodajKolor.getText().length() == 0
+							) {
+						throw new EmptyFieldException("You have to fill all fields.");
 					}
+					brand = txtPodajMark.getText();
+					model = txtPodajModel.getText();
+					color = txtPodajKolor.getText();
+
+				} catch(EmptyFieldException er) {
+						System.out.println("Wszystkie pola tekstowe musza byc wypelnione.");
+				}
 					
-					// Todo add costume error handling 
-					if(txtPodajModel.getText().length() > 0) {
-						model = txtPodajModel.getText();
-					}
-					
-					// Todo add costume error handling 
-					if(txtPodajKolor.getText().length() > 0) {
-						color = txtPodajKolor.getText();
-					}
-					
+				try {
 					if(Double.parseDouble(txtPodajCene.getText()) > 0.0){
 						price = Double.parseDouble(txtPodajCene.getText());
 					}
-					
-//					System.out.println(txtPodajMark.getText());
-//					System.out.println(txtPodajModel.getText());
-//					System.out.println(txtPodajKolor.getText());
-					System.out.println(Double.parseDouble(txtPodajCene.getText()));
-					
-					if(selectedType == VehicleType.CAR) {
-						vehicle = new Car(carID++, brand, color, model, price, "sedan", "benzyna");
-						vehicleDealer.addVehicleToList(vehicle);
-					}
-					
 				} catch(NumberFormatException err) {
 					System.out.println("Pole cena musi zawieraæ liczbê.");
 				}
+					
+					if(selectedType == VehicleType.CAR) {
+						vehicle = new Car(carID++, brand, color, model, price, "benzyna");
+						vehicleDealer.addVehicleToList(vehicle);
+					}
+					
+					if(selectedType == VehicleType.MOTORCYCLE) {
+						vehicle = new Motorcycle(motorcycleID++, brand, color, model, price, "dwusów");
+						vehicleDealer.addVehicleToList(vehicle);
+					}
+					
+					
+				
 				
 			}
+			
 		});
 		GridBagConstraints gbc_btnNewButton_1 = new GridBagConstraints();
 		gbc_btnNewButton_1.insets = new Insets(0, 0, 0, 5);
 		gbc_btnNewButton_1.gridx = 3;
 		gbc_btnNewButton_1.gridy = 10;
 		panel_1.add(btnNewButton_1, gbc_btnNewButton_1);
+		
+		Panel panel_2 = new Panel();
+		tabbedPane.addTab("Kasa", null, panel_2, null);
+		
+		Button button = new Button("Oblicz cene wszystkich pojazdow");
+		button.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				CarDealerCash carDealerCash = new CarDealerCash(vehicleDealer.getVehicleList());
+				
+				carDealerCash.calculateAllVehiclePrice();
+			}
+		});
+		panel_2.add(button);
 	}
 
 }
