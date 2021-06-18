@@ -23,6 +23,8 @@ import java.awt.Label;
 import java.awt.FlowLayout;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class VehicleDealerFrame {
 
@@ -32,7 +34,7 @@ public class VehicleDealerFrame {
 	private JTextField txtPodajMark;
 	private JTextField txtPodajModel;
 	private JTextField txtPodajKolor;
-	private JTextField textField;
+	private JTextField txtPodajCene;
 
 	/**
 	 * Launch the application.
@@ -208,17 +210,40 @@ public class VehicleDealerFrame {
 		gbc_lblNewLabel_4.gridy = 7;
 		panel_1.add(lblNewLabel_4, gbc_lblNewLabel_4);
 		
-		textField = new JTextField();
-		GridBagConstraints gbc_textField = new GridBagConstraints();
-		gbc_textField.gridwidth = 3;
-		gbc_textField.insets = new Insets(0, 0, 5, 5);
-		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField.gridx = 2;
-		gbc_textField.gridy = 8;
-		panel_1.add(textField, gbc_textField);
-		textField.setColumns(10);
+		txtPodajCene = new JTextField();
+		GridBagConstraints gbc_txtPodajCene = new GridBagConstraints();
+		gbc_txtPodajCene.gridwidth = 3;
+		gbc_txtPodajCene.insets = new Insets(0, 0, 5, 5);
+		gbc_txtPodajCene.fill = GridBagConstraints.HORIZONTAL;
+		gbc_txtPodajCene.gridx = 2;
+		gbc_txtPodajCene.gridy = 8;
+		panel_1.add(txtPodajCene, gbc_txtPodajCene);
+		txtPodajCene.setColumns(10);
 		
 		JButton btnNewButton_1 = new JButton("Dodaj pojazd");
+		btnNewButton_1.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+					if(rdbtnNewRadioButton_2.isSelected()) {
+						System.out.println("Samochód zaznaczony");
+					}
+					
+					if(rdbtnNewRadioButton_3.isSelected()) {
+						System.out.println("Motocykl zaznaczony");
+					}
+					
+					System.out.println(txtPodajMark.getText());
+					System.out.println(txtPodajModel.getText());
+					System.out.println(txtPodajKolor.getText());
+					System.out.println(Float.parseFloat(txtPodajCene.getText()));
+					
+				} catch(NumberFormatException err) {
+					System.out.println("Pole cena musi zawieraæ liczbê.");
+				}
+				
+			}
+		});
 		GridBagConstraints gbc_btnNewButton_1 = new GridBagConstraints();
 		gbc_btnNewButton_1.insets = new Insets(0, 0, 0, 5);
 		gbc_btnNewButton_1.gridx = 3;
