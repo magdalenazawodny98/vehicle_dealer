@@ -1,7 +1,6 @@
 package komis_samochodowy;
 
 import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 import java.awt.BorderLayout;
@@ -26,6 +25,7 @@ import javax.swing.GroupLayout.Alignment;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+
 public class VehicleDealerFrame {
 
 	private JFrame frame;
@@ -35,6 +35,9 @@ public class VehicleDealerFrame {
 	private JTextField txtPodajModel;
 	private JTextField txtPodajKolor;
 	private JTextField txtPodajCene;
+	private VehicleDealer vehicleDealer;
+	private int carID = 1;
+	private int motorcycleID = 1;
 
 	/**
 	 * Launch the application.
@@ -57,6 +60,7 @@ public class VehicleDealerFrame {
 	 */
 	public VehicleDealerFrame() {
 		initialize();
+		vehicleDealer = new VehicleDealer();
 	}
 
 	/**
@@ -80,6 +84,13 @@ public class VehicleDealerFrame {
 		panel.setLayout(gbl_panel);
 		
 		JRadioButton rdbtnNewRadioButton = new JRadioButton("Samochody");
+		rdbtnNewRadioButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+				// Obs³uga klikniêcia w samochód
+			}
+		});
 		buttonGroup.add(rdbtnNewRadioButton);
 		GridBagConstraints gbc_rdbtnNewRadioButton = new GridBagConstraints();
 		gbc_rdbtnNewRadioButton.insets = new Insets(0, 0, 5, 5);
@@ -88,6 +99,14 @@ public class VehicleDealerFrame {
 		panel.add(rdbtnNewRadioButton, gbc_rdbtnNewRadioButton);
 		
 		JRadioButton rdbtnNewRadioButton_1 = new JRadioButton("Motocykle");
+		rdbtnNewRadioButton_1.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+				// Obs³uga klikniêcia w motocykl
+
+			}
+		});
 		buttonGroup.add(rdbtnNewRadioButton_1);
 		GridBagConstraints gbc_rdbtnNewRadioButton_1 = new GridBagConstraints();
 		gbc_rdbtnNewRadioButton_1.insets = new Insets(0, 0, 5, 5);
@@ -225,18 +244,51 @@ public class VehicleDealerFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				try {
+					String selectedType = null;
+					String brand = null;
+					String model = null;
+					String color = null;
+					double price = 0.0;
+					Vehicle vehicle = null;
+					
 					if(rdbtnNewRadioButton_2.isSelected()) {
 						System.out.println("Samochód zaznaczony");
+						selectedType = VehicleType.CAR;
 					}
 					
 					if(rdbtnNewRadioButton_3.isSelected()) {
 						System.out.println("Motocykl zaznaczony");
+						selectedType = VehicleType.MOTORCYCLE;
+					}
+
+					// Todo add costume error handling 
+					if(txtPodajMark.getText().length() > 0) {
+						brand = txtPodajMark.getText();
 					}
 					
-					System.out.println(txtPodajMark.getText());
-					System.out.println(txtPodajModel.getText());
-					System.out.println(txtPodajKolor.getText());
-					System.out.println(Float.parseFloat(txtPodajCene.getText()));
+					// Todo add costume error handling 
+					if(txtPodajModel.getText().length() > 0) {
+						model = txtPodajModel.getText();
+					}
+					
+					// Todo add costume error handling 
+					if(txtPodajKolor.getText().length() > 0) {
+						color = txtPodajKolor.getText();
+					}
+					
+					if(Double.parseDouble(txtPodajCene.getText()) > 0.0){
+						price = Double.parseDouble(txtPodajCene.getText());
+					}
+					
+//					System.out.println(txtPodajMark.getText());
+//					System.out.println(txtPodajModel.getText());
+//					System.out.println(txtPodajKolor.getText());
+					System.out.println(Double.parseDouble(txtPodajCene.getText()));
+					
+					if(selectedType == VehicleType.CAR) {
+						vehicle = new Car(carID++, brand, color, model, price, "sedan", "benzyna");
+						vehicleDealer.addVehicleToList(vehicle);
+					}
 					
 				} catch(NumberFormatException err) {
 					System.out.println("Pole cena musi zawieraæ liczbê.");

@@ -5,7 +5,7 @@ import java.util.List;
 
 public class VehicleDealer {
 	private List<Vehicle> vehicleList;
-	private VehicleDealer() {
+	VehicleDealer() {
 		vehicleList = new ArrayList<>();
 	}
 	
